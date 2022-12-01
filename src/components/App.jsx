@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import { nanoid } from 'nanoid';
 import { ThemeProvider } from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
 
 import { theme } from "../theme/theme";
 import { Contact } from "./ContactList/ContactList";
@@ -10,7 +11,9 @@ import { ContactForm } from "./Form/Form";
 import { Filter } from "./Filter/Filter";
 import { PrimaryTitle, SecondaryTitle } from "./Titles/Titles";
 
+import 'react-toastify/dist/ReactToastify.css';
 
+const CONTACTS_KEY = 'contacts'
 
 export class App extends Component {
   state = {
@@ -22,6 +25,22 @@ export class App extends Component {
     ],
     filter:''
   }
+  componentDidUpdate(pP, pS){
+    const {contacts} = this.state
+    if (pS.contacts !== contacts) {
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts))
+      
+    }
+  }
+  componentDidMount(){
+    const contactsRaw = localStorage.getItem(CONTACTS_KEY);
+    const parseContacts = JSON.parse(contactsRaw);
+
+    if (contactsRaw) {
+      this.setState({contacts: parseContacts})
+    }
+   
+  }
 
   handleSubmit = (values, {resetForm}) =>{
       this.addNewCotact(values)
@@ -29,6 +48,9 @@ export class App extends Component {
   }
 
   addNewCotact = values =>{
+
+    const notify = (name) => toast.error(`${name} is already in contacts.`);
+
     const {name, number} = values;
     const {contacts} = this.state
 
@@ -42,7 +64,8 @@ export class App extends Component {
     }
 
     if (checkContact !== undefined) {
-      alert(`${name} is already in contacts.`)
+      // alert(`${name} is already in contacts.`)
+      notify(name)
     }else{
       this.setState(pS =>({
         contacts: [newContact, ...pS.contacts]
@@ -80,6 +103,7 @@ export class App extends Component {
 
           <ThemeProvider theme={theme}>
             <Container>
+              <ToastContainer/>
 
               <Container
                 display="flex"
