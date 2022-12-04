@@ -43,11 +43,10 @@ export class App extends Component {
   }
 
   handleSubmit = (values, {resetForm}) =>{
-      this.addNewCotact(values)
-      resetForm()
+      this.addNewCotact(values, resetForm)
   }
 
-  addNewCotact = values =>{
+  addNewCotact = (values, resetForm) =>{
 
     const notify = (name) => toast.error(`${name} is already in contacts.`);
 
@@ -69,10 +68,11 @@ export class App extends Component {
     }else{
       this.setState(pS =>({
         contacts: [newContact, ...pS.contacts]
-      }))
+      }));
+
+      resetForm()
   
     }
-    
   }
 
   deleteContact = contactId =>{
